@@ -112,19 +112,19 @@ class OrderedTabularInline(admin.TabularInline):
 
     @classmethod
     def get_urls(cls, model_admin):
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return model_admin.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-        return patterns('',
+        return [
                         url(r'^(.+)/{model}/(.+)/move-(up)/$'.format(**cls.get_model_info()), wrap(cls.move_view),
                             name='{app}_{model}_order_up_inline'.format(**cls.get_model_info())),
 
                         url(r'^(.+)/{model}/(.+)/move-(down)/$'.format(**cls.get_model_info()), wrap(cls.move_view),
                             name='{app}_{model}_order_down_inline'.format(**cls.get_model_info())),
-                        ) # + super(OrderedTabularInline, cls).get_urls()
+                        ] # + super(OrderedTabularInline, cls).get_urls()
 
     @classmethod
     def get_list_display(cls, request):
