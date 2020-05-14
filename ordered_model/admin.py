@@ -18,19 +18,19 @@ from django.contrib.admin.views.main import ChangeList
 
 class OrderedModelAdmin(admin.ModelAdmin):
     def get_urls(self):
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-        return patterns('',
+        return [
             url(r'^(.+)/move-(up)/$', wrap(self.move_view),
                 name='{app}_{model}_order_up'.format(**self._get_model_info())),
 
             url(r'^(.+)/move-(down)/$', wrap(self.move_view),
                 name='{app}_{model}_order_down'.format(**self._get_model_info())),
-            ) + super(OrderedModelAdmin, self).get_urls()
+            ] + super(OrderedModelAdmin, self).get_urls()
 
     def _get_changelist(self, request):
         list_display = self.get_list_display(request)
